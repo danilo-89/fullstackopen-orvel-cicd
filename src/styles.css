@@ -1,0 +1,142 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    color: #242424;
+}
+
+ul,
+ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+blockquote {
+    padding: 0;
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #242424;
+}
+
+nav > a:nth-of-type(2) {
+    margin-left: auto;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 0 12px;
+}
+
+.single-wrapper {
+    max-width: 100%;
+    width: 640px;
+    padding-top: 12px;
+}
+
+.list-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    max-width: 100%;
+    justify-content: center;
+    width: 640px;
+}
+
+.author-details {
+    max-width: 100%;
+    width: 640px;
+}
+
+h1 {
+    color: rgb(137, 92, 92);
+}
+
+.list-item {
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 10px;
+    height: 220px;
+    width: 180px;
+    position: relative;
+}
+
+.book-stripe {
+    position: absolute;
+    left: 8px;
+    width: 10px;
+    height: 100%;
+    background-color: rgb(179, 130, 130);
+}
+
+.list-item a {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: antiquewhite;
+    border-radius: 0 15px 15px 0;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 4px 14px 0 rgba(0, 0, 0, 0.19);
+    transition: background-color 0.25s ease;
+}
+
+.list-item a:hover {
+    background-color: rgb(255, 221, 173);
+}
+
+.list-item-name {
+    bottom: 0;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 16px;
+    margin-bottom: auto;
+    font-weight: bold;
+    color: #242424;
+    padding-left: 22px;
+    padding-right: 14px;
+}
+
+.list-item-year {
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 16px;
+    margin-top: auto;
+    color: #242424;
+}
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    text-decoration: none;
+    width: 332px;
+}
