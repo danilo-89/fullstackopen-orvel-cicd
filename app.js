@@ -1,5 +1,5 @@
 const express = require('express')
-const history = require('connect-history-api-fallback')
+const path = require('path')
 
 const app = express()
 
@@ -8,12 +8,15 @@ const PORT = process.env.PORT || 5000
 
 app.use(express.static('dist'))
 
-// Add history API fallback middleware, excluding /version and /health
+// Define routes that should not be redirected to index.html
+const excludeRoutes = ['/version', '/health']
+
+// Middleware to serve index.html for all routes except the excluded ones
 app.use((req, res, next) => {
-    if (req.url === '/version' || req.url === '/health') {
+    if (excludeRoutes.includes(req.url)) {
         return next()
     }
-    history()(req, res, next)
+    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'))
 })
 
 app.get('/version', (req, res) => {
