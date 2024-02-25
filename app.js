@@ -1,10 +1,14 @@
 const express = require('express')
+const history = require('connect-history-api-fallback')
+
 const app = express()
 
 // get the port from env variable
 const PORT = process.env.PORT || 5000
 
 app.use(express.static('dist'))
+
+app.use(history())
 
 app.get('/version', (req, res) => {
     res.send('0') // change this string to ensure a new version deployed
