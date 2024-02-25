@@ -8,7 +8,13 @@ const PORT = process.env.PORT || 5000
 
 app.use(express.static('dist'))
 
-app.use(history())
+// Add history API fallback middleware, excluding /version and /health
+app.use((req, res, next) => {
+    if (req.url === '/version' || req.url === '/health') {
+        return next()
+    }
+    history()(req, res, next)
+})
 
 app.get('/version', (req, res) => {
     res.send('0') // change this string to ensure a new version deployed
