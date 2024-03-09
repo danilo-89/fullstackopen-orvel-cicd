@@ -1,0 +1,82 @@
+name: Deployment pipeline
+
+on:
+    # Trigger the workflow on push events to the 'main' branch.
+    push:
+        branches:
+            - main
+    # Trigger the workflow on pull requests targeting the 'main' branch,
+    # specifically when a pull request is opened or when changes are synchronized.
+    pull_request:
+        branches: [main]
+        types: [opened, synchronize]
+
+jobs:
+    simple_deployment_pipeline:
+        name: 'deployment pipeline'
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  node-version: '16'
+            - name: Install dependencies
+              run: npm install
+            - name: Check style
+              run: npm run eslint
+            - name: e2e tests
+              uses: cypress-io/github-action@v5
+              with:
+                  command: npm run test:e2e
+                  build: npm run build
+                  start: npm run start-prod
+                  wait-on: http://localhost:5000
+            - name: Trigger deployment
+              # Condition checks if the GitHub event is a 'push' event and if the commit messages
+              # do not contain the string '#skip'. If both conditions are met, the associated block
+              # of code or job will be executed. This is commonly used to prevent certain workflows
+              # or jobs from running when commits explicitly mention skipping them with '#skip'.
+              if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+              run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+            - name: Build Success
+              uses: rjstone/discord-webhook-notify@v1
+              if: ${{ github.event_name == 'push' && success()}}
+              with:
+                  severity: info
+                  details: Build Succeeded!
+                  webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            - name: Build Failure
+              uses: rjstone/discord-webhook-notify@v1
+              if: ${{ github.event_name == 'push' && failure()}}
+              with:
+                  severity: error
+                  details: Build Failed!
+                  webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+    tag_release:
+        name: 'tag release'
+        # The current job has a dependency on the successful completion of
+        # the 'deployment_pipeline' job before it can be executed.
+        needs: [deployment_pipeline]
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  node-version: '16'
+            - name: Bump version and push tag
+              if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ', '), '#skip') }}
+              # When using a third-party action such that github-tag-action it might be a good idea to
+              # specify the used version with hash instead of using a version number. The code in a
+              # commit with a particular hash does not change in any circumstances, so if we want to
+              # be 100% sure about the code we use, it is safest to use the hash.
+              uses: anothrNick/github-tag-action@a2c70ae13a881faf2b4953baaa9e49731997ab36
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # Possible values for DEFAULT_BUMP:
+                  #   - 'major': Indicates a major version bump (e.g., 1.0.0 to 2.0.0).
+                  #   - 'minor': Indicates a minor version bump (e.g., 1.0.0 to 1.1.0).
+                  #   - 'patch': Indicates a patch version bump (e.g., 1.0.0 to 1.0.1).
+                  #
+                  # The DEFAULT_BUMP variable serves as the default type of version bump when not
+                  # explicitly provided. For instance, if a version bump type is not specified,
+                  # the 'patch' value here ensures a default behavior of incrementing the patch
+                  # version number in semantic versioning.
+                  DEFAULT_BUMP: patch

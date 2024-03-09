@@ -1,0 +1,17 @@
+name: Health check
+
+on:
+    schedule:
+        - cron: '0 0 * * 0' # Runs every Sunday at 00:00 UTC
+
+jobs:
+    periodic_health_check:
+        name: 'periodic health check'
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Check the deployed service URL
+              uses: jtalk/url-health-check-action@b716ccb6645355dd9fcce8002ce460e5474f7f00
+              with:
+                  url: https://fullstackopen-orvel-cicd.onrender.com/health
+                  max-attempts: 3
+                  retry-delay: 60s
