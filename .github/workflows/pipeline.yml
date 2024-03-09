@@ -12,7 +12,7 @@ on:
         types: [opened, synchronize]
 
 jobs:
-    simple_deployment_pipeline:
+    deployment_pipeline:
         name: 'deployment pipeline'
         runs-on: ubuntu-20.04
         steps:
